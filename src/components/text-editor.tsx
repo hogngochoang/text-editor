@@ -2,7 +2,6 @@
 
 import { EditorContent, Content} from "@tiptap/react"
 import {LinkBubbleMenu} from "@/components/custom-tiptap/bubble-menu/link-bubble-menu";
-import {LinkEditPopover} from "@/components/custom-tiptap/link/link-edit-popover";
 import {EditorToolbar} from "@/components/custom-tiptap/toolbar";
 import useTiptapEditor, { UseTiptapEditorProps } from "@/lib/hooks/useEditor";
 import {forwardRef, Ref} from "react";
@@ -30,8 +29,7 @@ export const RichTextEditor = forwardRef((props: TiptapProps, ref: Ref<any>) => 
   return (
     <div className="w-full">
       <EditorToolbar editor={editor} />
-
-      <EditorContent editor={editor} className="min-h-[300px]" />
+      <EditorContent editor={editor} className="tiptap-editor min-h-[300px] p-4" />
       <LinkBubbleMenu editor={editor} />
     </div>
   )

@@ -3,6 +3,7 @@ import type { Editor } from "@tiptap/react"
 import { Separator } from "@/components/ui/separator"
 import TextStyle from "@/components/custom-tiptap/toolbar/text-style";
 import {TextColor} from "@/components/custom-tiptap/toolbar/text-color";
+import {TextHeading} from "@/components/custom-tiptap/toolbar/text-heading";
 
 export const EditorToolbar = ({ editor }: { editor: Editor }) => (
   <div className="bg-muted/50 p-2 flex flex-wrap gap-1 items-center border-b">
@@ -21,23 +22,9 @@ export const EditorToolbar = ({ editor }: { editor: Editor }) => (
 
       <Separator orientation="vertical" className="mx-2 h-7" />
 
+      <TextHeading editor={editor} activeLevels={[1, 2, 3, 4]}/>
       <TextColor editor={editor} />
 
-      {/*<Separator orientation="vertical" className="mx-2 h-7" />*/}
-
-      {/*<SectionFour*/}
-      {/*  editor={editor}*/}
-      {/*  activeActions={["orderedList", "bulletList"]}*/}
-      {/*  mainActionCount={0}*/}
-      {/*/>*/}
-
-      {/*<Separator orientation="vertical" className="mx-2 h-7" />*/}
-
-      {/*<SectionFive*/}
-      {/*  editor={editor}*/}
-      {/*  activeActions={["codeBlock", "blockquote", "horizontalRule"]}*/}
-      {/*  mainActionCount={0}*/}
-      {/*/>*/}
     </div>
   </div>
 )

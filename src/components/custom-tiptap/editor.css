@@ -178,7 +178,61 @@
   @apply bg-primary/25;
 }
 
-/* Override native selection when custom selection is present */
 .tiptap-editor .ProseMirror .selection::selection {
   background: transparent;
+}
+
+/* Add this to your existing editor.css */
+
+.tiptap-editor .ProseMirror {
+  /* Headings */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold leading-tight mt-6 mb-4 first:mt-0;
+    @apply text-foreground/90;
+  }
+
+  h1 {
+    @apply text-3xl;
+    @apply scroll-m-20;
+    @apply tracking-tight;
+  }
+
+  h2 {
+    @apply text-xl;
+    @apply scroll-m-20;
+    @apply border-b pb-2;
+    @apply transition-colors;
+    @apply first:mt-0;
+  }
+
+  h3 {
+    @apply text-lg;
+    @apply scroll-m-20;
+  }
+
+  h4 {
+    @apply text-base;
+    @apply scroll-m-20;
+  }
+
+  h5 {
+    @apply text-sm;
+    @apply scroll-m-20;
+  }
+
+  h6 {
+    @apply text-xs;
+    @apply scroll-m-20;
+    @apply font-semibold;
+  }
+
+  /* Spacing after headings */
+  h1 + p,
+  h2 + p,
+  h3 + p,
+  h4 + p,
+  h5 + p,
+  h6 + p {
+    @apply mt-2;
+  }
 }
