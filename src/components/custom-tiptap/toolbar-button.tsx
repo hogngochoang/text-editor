@@ -27,7 +27,7 @@ export const ToolbarButton = React.forwardRef<
       <Toggle
         size="sm"
         ref={ref}
-        className={cn("size-8 p-0", { "bg-accent": isActive }, className)}
+        className={cn("size-8 p-0", { "bg-accent text-secondary-foreground": isActive }, className)}
         {...props}
       >
         {children}

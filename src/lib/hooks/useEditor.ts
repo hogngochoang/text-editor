@@ -1,20 +1,21 @@
 import * as React from "react"
-import type {Editor} from "@tiptap/react"
-import type {Content, UseEditorOptions} from "@tiptap/react"
-import {StarterKit} from "@tiptap/starter-kit"
+import type {Content, Editor, UseEditorOptions} from "@tiptap/react"
 import {useEditor} from "@tiptap/react"
+import {StarterKit} from "@tiptap/starter-kit"
 import {Typography} from "@tiptap/extension-typography"
 import {Placeholder} from "@tiptap/extension-placeholder"
 import {Underline} from "@tiptap/extension-underline"
 import {TextStyle} from "@tiptap/extension-text-style"
 import {cn} from "@/lib/utils"
 import {CodeBlockLowlight, Color, Link} from "@/lib/editor-extensions";
+import {TextAlign} from "@tiptap/extension-text-align";
 
 export interface UseTiptapEditorProps extends UseEditorOptions {
   value?: Content
   type?: "html" | "json" | "text"
   placeholder?: string
   editorClassName?: string
+  immediatelyRender?: boolean
   onUpdate?: (content: Content) => void
   onBlur?: (content: Content) => void
 }
@@ -36,6 +37,10 @@ const createExtensions = (placeholder: string) => [
   TextStyle,
   Typography,
   CodeBlockLowlight,
+  TextAlign.configure({
+    types: ['heading', 'paragraph'],
+    defaultAlignment: 'left',
+  }),
   Placeholder.configure({placeholder: () => placeholder}),
 ]
 
@@ -86,7 +91,7 @@ export const useTiptapEditor = (props: UseTiptapEditorProps) => {
     [type, onBlur]
   )
 
-  const editor = useEditor({
+  return useEditor({
     extensions: createExtensions(placeholder),
     editorProps: {
       attributes: {
@@ -101,8 +106,6 @@ export const useTiptapEditor = (props: UseTiptapEditorProps) => {
     onBlur: handleBlur,
     ...props,
   })
-
-  return editor
 }
 
 export default useTiptapEditor

@@ -5,6 +5,9 @@ import {LinkBubbleMenu} from "@/components/custom-tiptap/bubble-menu/link-bubble
 import {EditorToolbar} from "@/components/custom-tiptap/toolbar";
 import useTiptapEditor, { UseTiptapEditorProps } from "@/lib/hooks/useEditor";
 import {forwardRef, Ref} from "react";
+import {Button} from "@/components/ui/button";
+import {MoonIcon, SunIcon} from "@radix-ui/react-icons";
+import {useTheme} from "next-themes";
 
 export interface TiptapProps extends Omit<UseTiptapEditorProps, "onUpdate"> {
   value?: Content
@@ -15,10 +18,16 @@ export interface TiptapProps extends Omit<UseTiptapEditorProps, "onUpdate"> {
 
 export const RichTextEditor = forwardRef((props: TiptapProps, ref: Ref<any>) => {
   const {value, onChange, className, editorContentClassName} = props
+  const { theme, setTheme } = useTheme()
+  const toggleTheme = () => {
+    setTheme(theme === "dark" ? "light" : "dark")
+  }
 
   const editor = useTiptapEditor({
     value,
     onUpdate: onChange,
+    editable: true,
+    immediatelyRender: false,
     ...props,
   })
 
@@ -27,10 +36,17 @@ export const RichTextEditor = forwardRef((props: TiptapProps, ref: Ref<any>) => 
   }
 
   return (
-    <div className="w-full">
-      <EditorToolbar editor={editor} />
-      <EditorContent editor={editor} className="tiptap-editor min-h-[300px] p-4" />
-      <LinkBubbleMenu editor={editor} />
+    <div className='flex flex-col gap-6 w-full '>
+      <div className="flex justify-end">
+        <Button variant="outline" size="icon" onClick={toggleTheme}>
+          {theme === "dark" ? <SunIcon className="h-5 w-5"/> : <MoonIcon className="h-5 w-5"/>}
+        </Button>
+      </div>
+      <div className="w-full  border rounded-lg overflow-hidden">
+        <EditorToolbar editor={editor}/>
+        <EditorContent editor={editor} className="tiptap-editor min-h-[300px] p-4"/>
+        <LinkBubbleMenu editor={editor}/>
+      </div>
     </div>
   )
 })
