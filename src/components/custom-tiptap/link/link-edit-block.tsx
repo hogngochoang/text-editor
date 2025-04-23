@@ -23,14 +23,29 @@ export const LinkEditBlock = React.forwardRef<HTMLDivElement, LinkEditorProps>(
       (e: React.FormEvent) => {
         e.preventDefault()
         if (formRef.current) {
+          const urlRegex = /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w-./?%&=]*)?$/i
+          const processedUrl = url.startsWith('http://') || url.startsWith('https://')
+            ? url
+            : `https://${url}`
+          
+          const isValidUrl = urlRegex.test(processedUrl)
+          
           const isValid = Array.from(
             formRef.current.querySelectorAll("input")
-          ).every((input) => input.checkValidity())
+          ).every((input) => {
+            if (input.type === 'url') {
+              return isValidUrl
+            }
+            return input.checkValidity()
+          })
 
           if (isValid) {
-            onSave(url, text, isNewTab)
+            onSave(processedUrl, text, isNewTab)
           } else {
             formRef.current.querySelectorAll("input").forEach((input) => {
+              if (input.type === 'url' && !isValidUrl) {
+                input.setCustomValidity('Please enter a valid URL')
+              }
               if (!input.checkValidity()) {
                 input.reportValidity()
               }
@@ -49,7 +64,7 @@ export const LinkEditBlock = React.forwardRef<HTMLDivElement, LinkEditorProps>(
           <div className="space-y-1">
             <Label>URL</Label>
             <Input
-              type="url"
+              type="text"
               required
               placeholder="Enter URL"
               value={url}

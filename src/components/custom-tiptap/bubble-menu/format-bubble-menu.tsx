@@ -15,10 +15,20 @@ interface FormatBubbleMenuProps {
 }
 
 export const FormatBubbleMenu = ({ editor }: FormatBubbleMenuProps) => {
-
+  const shouldShow = React.useCallback(
+    ({ editor }: { editor: Editor }) => {
+      const { from, to } = editor.state.selection
+      if (from === to) {
+        return false
+      }
+      return !editor.isActive('link');
+    },
+    []
+  )
   return (
     <BubbleMenu
       editor={editor}
+      shouldShow={shouldShow}
       tippyOptions={{
         duration: 100,
         placement: "top"
