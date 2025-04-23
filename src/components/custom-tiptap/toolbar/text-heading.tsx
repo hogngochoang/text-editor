@@ -93,7 +93,7 @@ export const TextHeading = React.memo(
         <DropdownMenuItem
           key={label}
           onClick={() => handleStyleChange(level)}
-          className={cn("flex flex-row items-center justify-between gap-4", {
+          className={cn("flex flex-row items-center justify-between gap-4 hover:bg-accent", {
             "bg-accent": level
               ? editor.isActive("heading", { level })
               : editor.isActive("paragraph"),

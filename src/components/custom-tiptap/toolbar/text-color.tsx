@@ -137,7 +137,6 @@ export const TextColor = ({editor}: TextColorProps) => {
         <ToolbarButton
           tooltip="Text color"
           aria-label="Text color"
-          className="w-12"
         >
           <ColorWheelIcon className='size-5'/>
         </ToolbarButton>

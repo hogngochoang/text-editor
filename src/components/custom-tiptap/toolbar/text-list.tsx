@@ -1,8 +1,10 @@
 import * as React from "react"
 import type { Editor } from "@tiptap/react"
-import { ListBulletIcon } from "@radix-ui/react-icons"
+import {CaretDownIcon, ListBulletIcon} from "@radix-ui/react-icons"
 import {EditorFormatAction} from "@/components/custom-tiptap/editor-format-action";
 import ToolbarButton from "@/components/custom-tiptap/toolbar-button";
+import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
+import {cn} from "@/lib/utils";
 
 type ListItemAction = "orderedList" | "bulletList"
 interface ListItem extends Omit<EditorFormatAction, 'shortcuts'> {
@@ -58,17 +60,59 @@ export const TextList = (props: TextListProps) => {
           isActive={action.isActive(editor)}
           tooltip={`${action.label}`}
           aria-label={action.label}
-          className={className}
+          className={cn('hidden md:flex', className)}
         >
           {action.icon}
         </ToolbarButton>
       )
     },
+    [editor, className]
+  )
+
+  const renderDropdownItems = React.useCallback(
+    (actionValue: ListItemAction) => {
+      const action = formatActions.find((a) => a.value === actionValue)
+      if (!action) return null
+
+      return (
+        <DropdownMenuItem
+          key={action.label}
+          onClick={() => action.action(editor)}
+          className={cn('flex items-center gap-2 px-2 py-1 text-sm cursor-pointer hover:bg-accent', action.isActive(editor) ? 'bg-accent' : '')}
+        >
+          {action.icon}
+          <span>{action.label}</span>
+        </DropdownMenuItem>
+      )
+    },
     [editor]
   )
+
   return (
     <>
-      {activeActions.map(renderToolbarButton)}
+      <div className="hidden md:flex">
+        {activeActions.map(renderToolbarButton)}
+      </div>
+
+      <div className="md:hidden">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <ToolbarButton
+              className="w-12"
+              aria-label="List options"
+            >
+              <ListBulletIcon className="size-5" />
+              <CaretDownIcon className="size-5" />
+            </ToolbarButton>
+          </DropdownMenuTrigger>
+            <DropdownMenuContent
+              className="w-full"
+              sideOffset={5}
+            >
+              {activeActions.map(renderDropdownItems)}
+            </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
     </>
   )
 }
