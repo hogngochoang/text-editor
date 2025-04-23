@@ -6,7 +6,6 @@ import {
   FontBoldIcon,
   FontItalicIcon,
   StrikethroughIcon,
-  TextNoneIcon,
   UnderlineIcon,
 } from "@radix-ui/react-icons"
 import ToolbarButton from "@/components/custom-tiptap/toolbar-button";
@@ -18,7 +17,6 @@ type TextStyleAction =
   | "underline"
   | "strikethrough"
   | "code"
-  | "clearFormatting"
 
 interface TextStyle extends EditorFormatAction {
   value: TextStyleAction
@@ -79,27 +77,17 @@ const formatActions: TextStyle[] = [
       editor.can().chain().focus().toggleCode().run() &&
       !editor.isActive("codeBlock"),
     shortcuts: ["mod", "E"],
-  },
-  {
-    value: "clearFormatting",
-    label: "Clear formatting",
-    icon: <TextNoneIcon className="size-5" />,
-    action: (editor) => editor.chain().focus().unsetAllMarks().run(),
-    isActive: () => false,
-    canExecute: (editor) =>
-      editor.can().chain().focus().unsetAllMarks().run() &&
-      !editor.isActive("codeBlock"),
-    shortcuts: ["mod", "\\"],
-  },
+  }
 ]
 
 interface TextStyleProps {
   editor: Editor
   activeActions?: TextStyleAction[]
+  className?: string
 }
 
 export default function TextStyle (props : TextStyleProps)  {
-  const {editor, activeActions = formatActions.map((action) => action.value)} = props
+  const {editor, className,activeActions = formatActions.map((action) => action.value)} = props
   const renderToolbarButton = React.useCallback(
     (actionValue: TextStyleAction) => {
       const action = formatActions.find((a) => a.value === actionValue)
@@ -113,6 +101,7 @@ export default function TextStyle (props : TextStyleProps)  {
           isActive={action.isActive(editor)}
           tooltip={`${action.label} ${action.shortcuts.map((s) => getShortcutKey(s).symbol).join(" ")}`}
           aria-label={action.label}
+          className={className}
         >
           {action.icon}
         </ToolbarButton>

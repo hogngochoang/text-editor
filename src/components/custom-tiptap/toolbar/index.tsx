@@ -19,7 +19,6 @@ export const EditorToolbar = ({ editor }: { editor: Editor }) => (
           "underline",
           "strikethrough",
           "code",
-          "clearFormatting",
         ]}
       />
 

@@ -8,6 +8,7 @@ import {forwardRef, Ref} from "react";
 import {Button} from "@/components/ui/button";
 import {MoonIcon, SunIcon} from "@radix-ui/react-icons";
 import {useTheme} from "next-themes";
+import {FormatBubbleMenu} from "@/components/custom-tiptap/bubble-menu/format-bubble-menu";
 
 export interface TiptapProps extends Omit<UseTiptapEditorProps, "onUpdate"> {
   value?: Content
@@ -46,6 +47,7 @@ export const RichTextEditor = forwardRef((props: TiptapProps, ref: Ref<any>) => 
         <EditorToolbar editor={editor}/>
         <EditorContent editor={editor} className="tiptap-editor min-h-[300px] p-4"/>
         <LinkBubbleMenu editor={editor}/>
+        <FormatBubbleMenu editor={editor}/>
       </div>
     </div>
   )

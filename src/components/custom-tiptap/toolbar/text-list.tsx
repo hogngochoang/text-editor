@@ -41,10 +41,11 @@ const formatActions: ListItem[] = [
 interface TextListProps {
   editor: Editor
   activeActions?: ListItemAction[]
+  className?: string
 }
 
 export const TextList = (props: TextListProps) => {
-  const {editor, activeActions = formatActions.map((action) => action.value)} = props
+  const {editor, className, activeActions = formatActions.map((action) => action.value)} = props
   const renderToolbarButton = React.useCallback(
     (actionValue: ListItemAction) => {
       const action = formatActions.find((a) => a.value === actionValue)
@@ -57,6 +58,7 @@ export const TextList = (props: TextListProps) => {
           isActive={action.isActive(editor)}
           tooltip={`${action.label}`}
           aria-label={action.label}
+          className={className}
         >
           {action.icon}
         </ToolbarButton>

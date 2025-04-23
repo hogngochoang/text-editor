@@ -19,7 +19,7 @@ interface ShouldShowProps {
   to: number
 }
 
-export const LinkBubbleMenu: React.FC<LinkBubbleMenuProps> = ({ editor }) => {
+export const LinkBubbleMenu = ({ editor } : LinkBubbleMenuProps) => {
   const [showEdit, setShowEdit] = React.useState(false)
   const [linkAttrs, setLinkAttrs] = React.useState<LinkAttributes>({
     href: "",
