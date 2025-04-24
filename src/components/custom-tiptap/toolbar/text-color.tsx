@@ -113,9 +113,10 @@ const MemoizedColorPicker = React.memo<{
 
 interface TextColorProps {
   editor: Editor
+  className?: string
 }
 
-export const TextColor = ({editor}: TextColorProps) => {
+export const TextColor = ({editor, className}: TextColorProps) => {
   const color = editor.getAttributes("textStyle")?.color || "hsl(var(--foreground))"
   const [selectedColor, setSelectedColor] = React.useState(color)
 
@@ -137,6 +138,7 @@ export const TextColor = ({editor}: TextColorProps) => {
         <ToolbarButton
           tooltip="Text color"
           aria-label="Text color"
+          className={className}
         >
           <ColorWheelIcon className='size-5'/>
         </ToolbarButton>

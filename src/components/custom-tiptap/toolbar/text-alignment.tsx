@@ -9,9 +9,13 @@ import {
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 import {EditorFormatAction} from "@/components/custom-tiptap/editor-format-action";
 import ToolbarButton from "@/components/custom-tiptap/toolbar-button";
 import {cn} from "@/lib/utils";
@@ -56,46 +60,71 @@ const formatActions: TextAlignment[] = [
 interface TextAlignmentProps {
   editor: Editor
   activeActions?: TextAlignmentAction[]
+  className?: string
+  mode?: "fixed" | "inline"
 }
 
 export const TextAlignment = (props: TextAlignmentProps) => {
-  const {editor, activeActions = formatActions.map((action) => action.value)} = props
+  const {
+    editor,
+    className,
+    mode = "fixed",
+    activeActions = formatActions.map((action) => action.value)
+  } = props
+
   const renderMenuItem = React.useCallback(
     (actionValue: TextAlignmentAction) => {
       const action = formatActions.find((a) => a.value === actionValue)
       if (!action) return null
 
       return (
-        <DropdownMenuItem
+        <div
           key={action.value}
           onClick={() => action.action(editor)}
-          className={cn("flex items-center gap-2", {
+          className={cn("flex items-center gap-3 hover:bg-accent p-1 rounded cursor-default text-sm font-base", {
             "bg-accent": action.isActive(editor)
           })}
         >
           {action.icon}
           {action.label}
-        </DropdownMenuItem>
+        </div>
       )
     },
     [editor]
   )
 
   const currentAlignment = formatActions.find(action => action.isActive(editor))
+  const triggerButton = (
+    <ToolbarButton
+      isActive={editor.isActive("textAlign")}
+      tooltip="Alignment"
+      aria-label="Text alignment"
+      pressed={editor.isActive("textAlign")}
+      className={cn("w-12", className)}
+      disabled={editor.isActive("codeBlock")}
+    >
+      {currentAlignment?.icon || <TextAlignLeftIcon className="size-5" />}
+      <CaretDownIcon className="size-5" />
+    </ToolbarButton>
+  )
+
+  if (mode === "inline") {
+    return (
+      <Popover>
+        <PopoverTrigger asChild>
+          {triggerButton}
+        </PopoverTrigger>
+        <PopoverContent align="start" className="w-full px-2 py-2">
+          {activeActions.map(renderMenuItem)}
+        </PopoverContent>
+      </Popover>
+    )
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <ToolbarButton
-          isActive={editor.isActive("textAlign")}
-          tooltip="Alignment"
-          aria-label="Text alignment"
-          pressed={editor.isActive("textAlign")}
-          className="w-12"
-          disabled={editor.isActive("codeBlock")}
-        >
-          {currentAlignment?.icon || <TextAlignLeftIcon className="size-5" />}
-          <CaretDownIcon className="size-5" />
-        </ToolbarButton>
+        {triggerButton}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-full">
         {activeActions.map(renderMenuItem)}

@@ -10,8 +10,14 @@ import {
 } from "@radix-ui/react-icons"
 import ToolbarButton from "@/components/custom-tiptap/toolbar-button";
 import {getShortcutKey} from "@/components/custom-tiptap/editor-utils";
-import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
+import {DropdownMenu, DropdownMenuContent, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 import {cn} from "@/lib/utils";
+import {Button} from "@/components/ui/button";
 
 type TextStyleAction =
   | "bold"
@@ -74,13 +80,19 @@ interface TextStyleProps {
   editor: Editor
   activeActions?: TextStyleAction[]
   className?: string
+  mode?: "fixed" | "inline"
 }
 
 const mainActions: TextStyleAction[] = ["bold", "italic"]
 const dropdownActions: TextStyleAction[] = ["underline", "strikethrough"]
 
 export default function TextStyle(props: TextStyleProps) {
-  const {editor, className, activeActions = formatActions.map((action) => action.value)} = props
+  const {
+    editor, 
+    className, 
+    mode = "fixed",
+    activeActions = formatActions.map((action) => action.value)
+  } = props
 
   const renderToolbarButton = React.useCallback(
     (actionValue: TextStyleAction) => {
@@ -104,18 +116,19 @@ export default function TextStyle(props: TextStyleProps) {
     [editor, className]
   )
 
-  const renderDropdownItems = React.useCallback(
+  const renderMenuItem = React.useCallback(
     (actionValue: TextStyleAction) => {
       const action = formatActions.find((a) => a.value === actionValue)
       if (!action) return null
 
       return (
-        <DropdownMenuItem
+        <Button
+          variant="ghost"
           key={action.label}
           onClick={() => action.action(editor)}
           disabled={!action.canExecute(editor)}
           className={cn(
-            'flex items-center gap-2 px-2 py-1 text-sm cursor-pointer hover:bg-accent',
+            'flex items-center gap-2 px-2 py-1 text-sm cursor-pointer hover:bg-accent w-full',
             action.isActive(editor) ? 'bg-accent' : '',
             !action.canExecute(editor) ? 'opacity-50' : ''
           )}
@@ -125,7 +138,7 @@ export default function TextStyle(props: TextStyleProps) {
           <span className="ml-auto text-xs text-muted-foreground">
             {action.shortcuts.map((s) => getShortcutKey(s).symbol).join(" ")}
           </span>
-        </DropdownMenuItem>
+        </Button>
       )
     },
     [editor]
@@ -133,6 +146,12 @@ export default function TextStyle(props: TextStyleProps) {
 
   const filteredMainActions = activeActions.filter(action => mainActions.includes(action))
   const filteredDropdownActions = activeActions.filter(action => dropdownActions.includes(action))
+
+  const triggerButton = (
+    <ToolbarButton aria-label="More text styles" className={className}>
+      <DotsHorizontalIcon className="size-5" />
+    </ToolbarButton>
+  )
 
   return (
     <div className="flex items-center gap-1">
@@ -142,21 +161,25 @@ export default function TextStyle(props: TextStyleProps) {
       <div className="flex md:hidden items-center gap-1">
         {filteredMainActions.map(renderToolbarButton)}
         {filteredDropdownActions.length > 0 && (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <ToolbarButton
-                aria-label="More text styles"
-              >
-                <DotsHorizontalIcon className="size-5" />
-              </ToolbarButton>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent 
-              align="start"
-              className="w-full"
-            >
-              {filteredDropdownActions.map(renderDropdownItems)}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          mode === "inline" ? (
+            <Popover>
+              <PopoverTrigger asChild>
+                {triggerButton}
+              </PopoverTrigger>
+              <PopoverContent align="start" className="w-full px-2 py-2">
+                {filteredDropdownActions.map(renderMenuItem)}
+              </PopoverContent>
+            </Popover>
+          ) : (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                {triggerButton}
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-full">
+                {filteredDropdownActions.map(renderMenuItem)}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )
         )}
       </div>
     </div>

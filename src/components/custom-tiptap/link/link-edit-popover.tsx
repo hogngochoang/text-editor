@@ -1,7 +1,5 @@
 import * as React from "react"
 import type { Editor } from "@tiptap/react"
-import type { VariantProps } from "class-variance-authority"
-import type { toggleVariants } from "@/components/ui/toggle"
 import {
   Popover,
   PopoverContent,
@@ -13,9 +11,10 @@ import LinkEditBlock from "@/components/custom-tiptap/link/link-edit-block";
 
 interface LinkEditPopoverProps {
   editor: Editor
+  className?: string
 }
 
-const LinkEditPopover = ({ editor }: LinkEditPopoverProps) => {
+const LinkEditPopover = ({ editor, className }: LinkEditPopoverProps) => {
   const [open, setOpen] = React.useState(false)
 
   const { from, to } = editor.state.selection
@@ -56,6 +55,7 @@ const LinkEditPopover = ({ editor }: LinkEditPopoverProps) => {
           tooltip="Link"
           aria-label="Insert link"
           disabled={editor.isActive("codeBlock")}
+          className={className}
         >
           <Link2Icon className="size-5" />
         </ToolbarButton>

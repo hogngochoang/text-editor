@@ -81,8 +81,8 @@ layer(base);
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
+    --background: hsl(0 0% 100%);
+    --foreground: hsl(240 10% 3.9%);
 
     --card: #ffffff;
     --card-foreground: #0f1729;
@@ -123,8 +123,8 @@ layer(base);
   }
 
   .dark {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
+    --background: hsl(240 10% 3.9%);
+    --foreground: hsl(0 0% 98%);
 
     --card: #0f1729;
     --card-foreground: #f8fafc;

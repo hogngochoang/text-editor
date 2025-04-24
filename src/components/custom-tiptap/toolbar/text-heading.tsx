@@ -6,9 +6,13 @@ import { CaretDownIcon, LetterCaseCapitalizeIcon } from "@radix-ui/react-icons"
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 import {EditorFormatAction} from "@/components/custom-tiptap/editor-format-action";
 import ToolbarButton from "@/components/custom-tiptap/toolbar-button";
 
@@ -65,10 +69,12 @@ const formatActions: TextHeading[] = [
 interface TextHeadingProps {
   editor: Editor
   activeLevels?: Level[]
+  className?: string
+  mode?: "fixed" | "inline"
 }
 
 export const TextHeading = React.memo(
-  ({ editor, activeLevels = [1, 2, 3, 4, 5, 6] } : TextHeadingProps) => {
+  ({ editor, className, mode = "fixed", activeLevels = [1, 2, 3, 4, 5, 6] } : TextHeadingProps) => {
     const filteredActions = React.useMemo(
       () =>
         formatActions.filter(
@@ -90,36 +96,52 @@ export const TextHeading = React.memo(
 
     const renderMenuItem = React.useCallback(
       ({ label, element: Element, level, className }: TextHeading) => (
-        <DropdownMenuItem
+        <div
           key={label}
           onClick={() => handleStyleChange(level)}
-          className={cn("flex flex-row items-center justify-between gap-4 hover:bg-accent", {
+          className={cn("flex items-center gap-3 hover:bg-accent p-1 rounded cursor-default", {
             "bg-accent": level
               ? editor.isActive("heading", { level })
               : editor.isActive("paragraph"),
           })}
-          aria-label={label}
         >
           <Element className={className}>{label}</Element>
-        </DropdownMenuItem>
+        </div>
       ),
       [editor, handleStyleChange]
     )
 
+    const triggerButton = (
+      <ToolbarButton
+        isActive={editor.isActive("heading")}
+        tooltip="Heading"
+        aria-label="Text styles"
+        pressed={editor.isActive("heading")}
+        className={cn("w-12", className)}
+        disabled={editor.isActive("codeBlock")}
+      >
+        <LetterCaseCapitalizeIcon className="size-5" />
+        <CaretDownIcon className="size-5" />
+      </ToolbarButton>
+    )
+
+    if (mode === "inline") {
+      return (
+        <Popover>
+          <PopoverTrigger asChild>
+            {triggerButton}
+          </PopoverTrigger>
+          <PopoverContent align="start" className="w-full px-2 py-2">
+            {filteredActions.map(renderMenuItem)}
+          </PopoverContent>
+        </Popover>
+      )
+    }
+
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <ToolbarButton
-            isActive={editor.isActive("heading")}
-            tooltip="Heading"
-            aria-label="Text styles"
-            pressed={editor.isActive("heading")}
-            className="w-12"
-            disabled={editor.isActive("codeBlock")}
-          >
-            <LetterCaseCapitalizeIcon className="size-5" />
-            <CaretDownIcon className="size-5" />
-          </ToolbarButton>
+          {triggerButton}
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start" className="w-full">
           {filteredActions.map(renderMenuItem)}

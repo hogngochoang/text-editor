@@ -4,8 +4,10 @@ import {CaretDownIcon, CodeIcon, PlusIcon, QuoteIcon,} from "@radix-ui/react-ico
 import {EditorFormatAction} from "@/components/custom-tiptap/editor-format-action";
 import ToolbarButton from "@/components/custom-tiptap/toolbar-button";
 import {LinkEditPopover} from "@/components/custom-tiptap/link/link-edit-popover";
-import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
+import {DropdownMenu, DropdownMenuContent, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
 import {cn} from "@/lib/utils";
+import {Button} from "@/components/ui/button";
+import {Popover, PopoverContent, PopoverTrigger,} from "@/components/ui/popover"
 
 type InsertElementAction = "codeBlock" | "blockquote" | "horizontalRule"
 interface InsertElement extends Omit<EditorFormatAction, 'shortcuts'> {
@@ -36,13 +38,15 @@ const formatActions: InsertElement[] = [
 interface TextInsertElementProps {
   editor: Editor
   activeActions?: InsertElementAction[]
+  className?: string
+  mode?: "fixed" | "inline"
 }
 
 const mainActions: InsertElementAction[] = ["codeBlock"]
 const dropdownActions: InsertElementAction[] = ["blockquote", "horizontalRule"]
 
 export const TextInsertElement = (props: TextInsertElementProps) => {
-  const {editor, activeActions = formatActions.map((action) => action.value)} = props
+  const {editor, className, mode = "fixed", activeActions = formatActions.map((action) => action.value)} = props
   const renderToolbarButton = React.useCallback(
     (actionValue: InsertElementAction) => {
       const action = formatActions.find((a) => a.value === actionValue)
@@ -55,6 +59,7 @@ export const TextInsertElement = (props: TextInsertElementProps) => {
           isActive={action.isActive(editor)}
           tooltip={`${action.label}`}
           aria-label={action.label}
+          className={className}
         >
           {action.icon}
         </ToolbarButton>
@@ -63,57 +68,69 @@ export const TextInsertElement = (props: TextInsertElementProps) => {
     [editor]
   )
 
-  const renderDropdownItems = React.useCallback(
+  const renderMenuItem = React.useCallback(
     (actionValue: InsertElementAction) => {
       const action = formatActions.find((a) => a.value === actionValue)
       if (!action) return null
 
       return (
-        <DropdownMenuItem
+        <Button
+          variant="ghost"
           key={action.label}
           onClick={() => action.action(editor)}
           disabled={!action.canExecute(editor)}
           className={cn(
-            'flex items-center gap-2 px-2 py-1 text-sm cursor-pointer hover:bg-accent',
+            'flex items-center gap-2 px-2 py-1 text-sm cursor-pointer hover:bg-accent w-full',
             action.isActive(editor) ? 'bg-accent' : '',
             !action.canExecute(editor) ? 'opacity-50' : ''
           )}
         >
           {action.icon}
           <span>{action.label}</span>
-        </DropdownMenuItem>
+        </Button>
       )
     },
     [editor]
   )
   const filteredMainActions = activeActions.filter(action => mainActions.includes(action))
   const filteredDropdownActions = activeActions.filter(action => dropdownActions.includes(action))
+  const triggerButton = (
+    <ToolbarButton
+      aria-label="More elements"
+      className={cn("w-12", className)}
+    >
+      <PlusIcon className="size-5" />
+      <CaretDownIcon className="size-5" />
+    </ToolbarButton>
+  )
   return (
     <>
-      <LinkEditPopover editor={editor} />
+      <LinkEditPopover editor={editor} className={className}/>
       <div className="hidden md:flex items-center gap-1">
         {activeActions.map(renderToolbarButton)}
       </div>
       <div className="flex md:hidden items-center gap-1">
         {filteredMainActions.map(renderToolbarButton)}
         {filteredDropdownActions.length > 0 && (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <ToolbarButton
-                aria-label="More elements"
-                className="w-12"
-              >
-                <PlusIcon className="size-5" />
-                <CaretDownIcon className="size-5" />
-              </ToolbarButton>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="start"
-              className="w-full"
-            >
-              {filteredDropdownActions.map(renderDropdownItems)}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          mode === "inline" ? (
+            <Popover>
+              <PopoverTrigger asChild>
+                {triggerButton}
+              </PopoverTrigger>
+              <PopoverContent align="start" className="w-full px-2 py-2">
+                {filteredDropdownActions.map(renderMenuItem)}
+              </PopoverContent>
+            </Popover>
+          ) : (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                {triggerButton}
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-full">
+                {filteredDropdownActions.map(renderMenuItem)}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )
         )}
       </div>
 
